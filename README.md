@@ -3,11 +3,8 @@ to run:
  - `pip install selenium`
 
 create a secrets.py file with variables:
+
 ``` 
- username = 'your_username'
- password = 'your_password'
+phonenumber = ""
+blacklist = ["term1", "term2", "term3"]
 ```
-
-please add more features to this, would be awesome to see what you can come up w
-
-cheers
