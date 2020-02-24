@@ -1,67 +1,87 @@
 from selenium import webdriver
 from time import sleep
 
-from secrets import username, password
+from secrets import phonenumber, blacklist
 
 class TinderBot():
-    def __init__(self):
-        self.driver = webdriver.Chrome()
+	def __init__(self):
+		self.driver = webdriver.Chrome()
 
-    def login(self):
-        self.driver.get('https://tinder.com')
+	def login(self):
+		self.driver.get('https://tinder.com')
 
-        sleep(2)
+		sleep(2)
 
-        fb_btn = self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div/div/div[3]/div[2]/button')
-        fb_btn.click()
+		pn_btn = self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div/div/div[3]/div[1]/button')
+		pn_btn.click()
 
-        # switch to login popup
-        base_window = self.driver.window_handles[0]
-        self.driver.switch_to_window(self.driver.window_handles[1])
+		sleep(2)
 
-        email_in = self.driver.find_element_by_xpath('//*[@id="email"]')
-        email_in.send_keys(username)
+		pn_in = self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div[2]/div[2]/div/input')
+		pn_in.send_keys(phonenumber)
 
-        pw_in = self.driver.find_element_by_xpath('//*[@id="pass"]')
-        pw_in.send_keys(password)
+		continue_btn = self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div[2]/button')
+		continue_btn.click()
 
-        login_btn = self.driver.find_element_by_xpath('//*[@id="u_0_0"]')
-        login_btn.click()
+		# you will need to manually enter the code that was texted
+		sleep(15)
+        
+		self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div/div/div[3]/button[1]').click()
+		self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div/div/div[3]/button[1]').click()
 
-        self.driver.switch_to_window(base_window)
+	def like(self):
+		like_btn = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[2]/div/button[3]')
+		like_btn.click()
 
-        popup_1 = self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div/div/div[3]/button[1]')
-        popup_1.click()
+	def dislike(self):
+		dislike_btn = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[2]/div/button[1]')
+		dislike_btn.click()
 
-        popup_2 = self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div/div/div[3]/button[1]')
-        popup_2.click()
+	def swipe(self):
+		sleep(5)
+		while True:
+			sleep(2)
+			liked = True
+			try:
+				# open up bio
+				self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/button').click()
+				try:
+					bio = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[2]/div[2]/span').text
+				except Exception:
+					bio = ""
+				# search bio for blacklisted term	
+				for term in blacklist:
+					if term in bio:
+						print(term + " found in Blacklist")
+						liked = False
 
-    def like(self):
-        like_btn = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[2]/button[3]')
-        like_btn.click()
+				try:
+					# check if profile only has one photo
+					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[1]/span/a[2]/div/div[1]/div/div[2]')
 
-    def dislike(self):
-        dislike_btn = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[2]/button[1]')
-        dislike_btn.click()
+				except Exception:
+					print("Could not find second photo")
+					liked = False
 
-    def auto_swipe(self):
-        while True:
-            sleep(0.5)
-            try:
-                self.like()
-            except Exception:
-                try:
-                    self.close_popup()
-                except Exception:
-                    self.close_match()
+				if liked:
+					self.like()
+				else:
+					self.dislike()
 
-    def close_popup(self):
-        popup_3 = self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div[2]/button[2]')
-        popup_3.click()
+			except Exception:
+				try:
+					self.close_popup()
+				except Exception:
+					self.close_match()
 
-    def close_match(self):
-        match_popup = self.driver.find_element_by_xpath('//*[@id="modal-manager-canvas"]/div/div/div[1]/div/div[3]/a')
-        match_popup.click()
+	def close_popup(self):
+		popup_3 = self.driver.find_element_by_xpath('//*[@id="modal-manager"]/div/div/div[2]/button[2]')
+		popup_3.click()
+
+	def close_match(self):
+		match_popup = self.driver.find_element_by_xpath('//*[@id="modal-manager-canvas"]/div/div/div[1]/div/div[3]/a')
+		match_popup.click()
 
 bot = TinderBot()
 bot.login()
+bot.swipe()
