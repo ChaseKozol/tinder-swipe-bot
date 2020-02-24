@@ -44,19 +44,25 @@ class TinderBot():
 			liked = True
 			try:
 				# open up bio
-				self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/button').click()
+				try:
+					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/button').click()
+				# sometimes the button moves ?
+				except Exception:
+					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/div/main/div/div[1]/div/div[1]/div[3]/div[7]/button').click()
+
 				try:
 					bio = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[2]/div[2]/span').text
 				except Exception:
 					bio = ""
-				# search bio for blacklisted term	
+				
+				#search bio for blacklisted term	
 				for term in blacklist:
 					if term in bio:
 						print(term + " found in Blacklist")
 						liked = False
 
+				# check if profile only has one photo
 				try:
-					# check if profile only has one photo
 					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[1]/span/a[2]/div/div[1]/div/div[2]')
 
 				except Exception:
