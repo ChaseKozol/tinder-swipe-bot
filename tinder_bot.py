@@ -37,18 +37,24 @@ class TinderBot():
 		dislike_btn = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[2]/div/button[1]')
 		dislike_btn.click()
 
+	def find_bio_button(self):
+		# open up bio
+			try:
+				self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/button').click()
+			# sometimes the button moves ?
+			except Exception:
+				try:
+					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/div/main/div/div[1]/div/div[1]/div[3]/div[7]/button').click()
+					# who the fuck made this website ???
+				except Exception:
+					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[7]/button').click()
+
 	def swipe(self):
-		sleep(5)
 		while True:
-			sleep(2)
+			sleep(1)
 			liked = True
 			try:
-				# open up bio
-				try:
-					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div/div[1]/div[3]/div[6]/button').click()
-				# sometimes the button moves ?
-				except Exception:
-					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/div/main/div/div[1]/div/div[1]/div[3]/div[7]/button').click()
+				self.find_bio_button()
 
 				try:
 					bio = self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[2]/div[2]/span').text
@@ -64,7 +70,6 @@ class TinderBot():
 				# check if profile only has one photo
 				try:
 					self.driver.find_element_by_xpath('//*[@id="content"]/div/div[1]/div/main/div[1]/div/div/div[1]/div[1]/div/div[1]/span/a[2]/div/div[1]/div/div[2]')
-
 				except Exception:
 					print("Could not find second photo")
 					liked = False
@@ -90,4 +95,5 @@ class TinderBot():
 
 bot = TinderBot()
 bot.login()
+sleep(5)
 bot.swipe()
